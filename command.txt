@@ -1,0 +1,13 @@
+snap refresh
+sudo snap install core snapd
+sudo snap install microk8s --classic --channel=1.26
+sudo usermod -a -G microk8s $USER
+sudo chown -f -R $USER ~/.kube
+su - $USER
+sudo microk8s.enable community
+sudo microk8s.enable istio
+microk8s.kubectl label namespace default istio-injection=enabled
+microk8s kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.17/samples/addons/jaeger.yaml
+microk8s.kubectl apply -f deployment.yaml
+sudo microk8s.kubectl expose deployment hellow-deployment --type=NodePort --name=hello-service
+microk8s istioctl dashboard jaeger
